@@ -15,6 +15,7 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       text-align: center;
       color: #fff;
+      overflow: hidden;
     }
     .card {
       background: rgba(0,0,0,0.25);
@@ -38,6 +39,84 @@
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.2); }
     }
+    .question {
+      margin-top: 24px;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      position: relative;
+      height: 50px;
+    }
+    .btn {
+      padding: 12px 32px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-yes {
+      background: #4CAF50;
+      color: white;
+    }
+    .btn-yes:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.5);
+    }
+    .btn-no {
+      background: #f44336;
+      color: white;
+      position: absolute;
+      transition: all 0.1s ease-out;
+    }
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .popup.show {
+      display: flex;
+    }
+    .popup-content {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+      padding: 50px;
+      border-radius: 20px;
+      text-align: center;
+      animation: popIn 0.5s ease-out;
+    }
+    .popup-content .heart {
+      font-size: 5rem;
+    }
+    .popup-content h2 {
+      font-size: 2rem;
+      margin: 20px 0;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .sparkles {
+      position: fixed;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 999;
+    }
   </style>
 </head>
 <body>
@@ -48,6 +127,89 @@
       Every day with you means everything to me.<br>
       Thank you for being you.
     </p>
+    <div class="question">Can you love me forever?</div>
+    <div class="buttons">
+      <button class="btn btn-yes" onclick="sayYes()">Yes</button>
+      <button class="btn btn-no" id="noBtn">No</button>
+    </div>
   </div>
+
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <div class="heart">💕</div>
+      <h2>I will also love you forever! 💖</h2>
+      <p>You make my heart complete ❤️</p>
+    </div>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById('noBtn');
+    const popup = document.getElementById('popup');
+    
+    function sayYes() {
+      popup.classList.add('show');
+      createHearts();
+    }
+    
+    function createHearts() {
+      for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.innerHTML = ['❤️', '💕', '💖', '💗', '💓'][Math.floor(Math.random() * 5)];
+          heart.style.position = 'fixed';
+          heart.style.left = Math.random() * 100 + 'vw';
+          heart.style.top = '100vh';
+          heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+          heart.style.pointerEvents = 'none';
+          heart.style.zIndex = '1001';
+          heart.style.animation = 'floatUp 3s ease-out forwards';
+          document.body.appendChild(heart);
+          
+          setTimeout(() => heart.remove(), 3000);
+        }, i * 100);
+      }
+    }
+    
+    // Add float animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes floatUp {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Make the No button run away from mouse
+    noBtn.addEventListener('mouseover', moveButton);
+    noBtn.addEventListener('mouseenter', moveButton);
+    noBtn.addEventListener('mousemove', moveButton);
+    
+    function moveButton() {
+      const card = document.querySelector('.card');
+      const cardRect = card.getBoundingClientRect();
+      
+      // Get viewport dimensions
+      const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+      const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+      
+      // Generate random position
+      let newX = Math.random() * maxX;
+      let newY = Math.random() * maxY;
+      
+      // Make sure it doesn't overlap with current mouse position
+      noBtn.style.position = 'fixed';
+      noBtn.style.left = newX + 'px';
+      noBtn.style.top = newY + 'px';
+      noBtn.style.zIndex = '100';
+    }
+    
+    // Close popup when clicking outside
+    popup.addEventListener('click', (e) => {
+      if (e.target === popup) {
+        popup.classList.remove('show');
+      }
+    });
+  </script>
 </body>
 </html>
