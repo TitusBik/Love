@@ -186,22 +186,37 @@
     noBtn.addEventListener('mousemove', moveButton);
     
     function moveButton() {
-      const card = document.querySelector('.card');
-      const cardRect = card.getBoundingClientRect();
+      const yesBtn = document.querySelector('.btn-yes');
+      const yesBtnRect = yesBtn.getBoundingClientRect();
       
       // Get viewport dimensions
       const maxX = window.innerWidth - noBtn.offsetWidth - 20;
       const maxY = window.innerHeight - noBtn.offsetHeight - 20;
       
-      // Generate random position
-      let newX = Math.random() * maxX;
-      let newY = Math.random() * maxY;
+      // Generate random position that doesn't overlap with Yes button
+      let newX, newY;
+      let attempts = 0;
+      do {
+        newX = Math.random() * maxX;
+        newY = Math.random() * maxY;
+        attempts++;
+      } while (attempts < 50 && isOverlapping(newX, newY, yesBtnRect));
       
-      // Make sure it doesn't overlap with current mouse position
       noBtn.style.position = 'fixed';
       noBtn.style.left = newX + 'px';
       noBtn.style.top = newY + 'px';
       noBtn.style.zIndex = '100';
+    }
+    
+    function isOverlapping(x, y, yesBtnRect) {
+      const padding = 20; // Extra padding to keep buttons apart
+      const noBtnWidth = noBtn.offsetWidth;
+      const noBtnHeight = noBtn.offsetHeight;
+      
+      return !(x + noBtnWidth + padding < yesBtnRect.left ||
+               x > yesBtnRect.right + padding ||
+               y + noBtnHeight + padding < yesBtnRect.top ||
+               y > yesBtnRect.bottom + padding);
     }
     
     // Close popup when clicking outside
