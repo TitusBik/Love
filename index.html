@@ -72,8 +72,13 @@
     .btn-no {
       background: #f44336;
       color: white;
-      position: absolute;
       transition: all 0.1s ease-out;
+    }
+    .btn-no.escaping {
+      position: fixed;
+    }
+    .buttons.centered {
+      justify-content: center;
     }
     .popup {
       display: none;
@@ -186,7 +191,15 @@
     noBtn.addEventListener('mousemove', moveButton);
     
     function moveButton() {
+      const buttonsContainer = document.querySelector('.buttons');
       const yesBtn = document.querySelector('.btn-yes');
+      
+      // First time escaping: add classes to center Yes button
+      if (!noBtn.classList.contains('escaping')) {
+        noBtn.classList.add('escaping');
+        buttonsContainer.classList.add('centered');
+      }
+      
       const yesBtnRect = yesBtn.getBoundingClientRect();
       
       // Get viewport dimensions
@@ -202,7 +215,6 @@
         attempts++;
       } while (attempts < 50 && isOverlapping(newX, newY, yesBtnRect));
       
-      noBtn.style.position = 'fixed';
       noBtn.style.left = newX + 'px';
       noBtn.style.top = newY + 'px';
       noBtn.style.zIndex = '100';
